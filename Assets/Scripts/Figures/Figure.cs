@@ -16,7 +16,7 @@ public abstract class Figure : MonoBehaviour
 
     private void Awake()
     {
-        BoardPosition.Set((int)(transform.position.x / BoardManager.SquareSize), (int)(transform.position.y / BoardManager.SquareSize));
+        BoardPosition = new ((int)(transform.position.x / BoardManager.SquareSize), (int)(transform.position.y / BoardManager.SquareSize));
         _takeTurnWait = new WaitUntil(FinishedTurn);
         BoardManager.Instance.AddToBoard(this);
     }
@@ -29,7 +29,7 @@ public abstract class Figure : MonoBehaviour
 
     protected void FinishTurn()
     {
-
+        BoardManager.Instance.MoveFigure(this, _newBoardPosition);
         BoardPosition = _newBoardPosition;
         _finishedTurn = true;
     }

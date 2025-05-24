@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BoardManager : MonoBehaviourSingleton<BoardManager>
 {
@@ -8,6 +10,21 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
 
     public static readonly float SquareSize = .625f;
 
+    private Vector2Int[] _knightMoves = new Vector2Int[]
+    {
+        new Vector2Int(-2, 1), new Vector2Int(-2, -1), new Vector2Int(-1, 2), new Vector2Int(-1, -2),
+        new Vector2Int(1, 2), new Vector2Int(1, -2), new Vector2Int(2, 1), new Vector2Int(2, -1)
+    };
+    private Vector2Int[] _bishopMoves = new Vector2Int[]
+    {
+        new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
+    };
+    private Vector2Int[] _rookMoves = new Vector2Int[]
+    {
+        new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1)
+    };
+
+    private Coroutine _turnsCoroutine;
     private int _movingFigureIndex;
     private Figure[,] _figuresOnBoard;
     private List<Figure> _figuresByPriority = new();
@@ -21,7 +38,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
 
     private void Start()
     {
-        StartCoroutine(TakeTurns());
+        _turnsCoroutine = StartCoroutine(TakeTurns());
     }
 
     public void AddToBoard(Figure figure)
@@ -65,17 +82,42 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
 
     public bool TrySpotPlayer(Figure figure, FigureType type, out Vector2Int targetPosition)
     {
-        int positionX, positionY;
-        Figure checkedFigure;
-        Figure foundFigure = null;
+        targetPosition = Vector2Int.left;
+        bool stopSearch;
+        Vector2Int searchedPosition = new();
         switch (type)
         {
             case FigureType.Knight:
-                break;
+                foreach (var move in _knightMoves)
+                {
+                    searchedPosition.Set(figure.BoardPosition.x + move.x, figure.BoardPosition.y + move.y);
+                    if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch))
+                        targetPosition = searchedPosition;
+                    if (stopSearch)
+                        return targetPosition.x != -1;
+                }
+                return targetPosition.x != -1;
             case FigureType.Bishop:
                 break;
             case FigureType.Rook:
-                break;
+                int rangeMultiplier;
+                foreach (var move in _rookMoves)
+                {
+                    rangeMultiplier = 1;
+                    do
+                    {
+                        searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
+                        rangeMultiplier++;
+                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
+                            targetPosition = searchedPosition;
+                        if (stopSearch)
+                        {
+
+                        }
+                    }
+                    while (true);
+                }
+                return targetPosition.x != -1;
             case FigureType.Queen:
                 break;
             case FigureType.King:
@@ -83,39 +125,51 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 {
                     for (int y = -1; y <= 1; y++)
                     {
-                        positionX = figure.BoardPosition.x + x;
-                        positionY = figure.BoardPosition.y + y;
-                        if (positionX < 0 || positionY < 0 || positionX >= _boardSize.x || positionY >= _boardSize.y)
-                            continue;
-                        checkedFigure = _figuresOnBoard[positionX, positionY];
-                        if (checkedFigure != null && checkedFigure.IsTempting)
-                        {
-                            if (checkedFigure.CompareTag("Player"))
-                            {
-                                targetPosition = checkedFigure.BoardPosition;
-                                return true;
-                            }
-                            else
-                                foundFigure = checkedFigure;
-                        }
+                        searchedPosition.Set(figure.BoardPosition.x + x, figure.BoardPosition.y + y);
+                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch))
+                            targetPosition = searchedPosition;
+                        if (stopSearch)
+                            return targetPosition.x != -1;
                     }
                 }
-                if (foundFigure != null)
-                {
-                    targetPosition = foundFigure.BoardPosition;
-                    return true;
-                }
-                break;
+                return targetPosition.x != -1;
             default:
                 break;
         }
-        targetPosition = new Vector2Int();
+        return false;
+    }
+
+    public Figure GetFigureAtPosition (int x, int y) => _figuresOnBoard[x, y];
+
+    private bool IsWorthGoingTo(int positionX, int positionY, out bool stopSearch, bool stopOnObstacle = false)
+    {
+        stopSearch = false;
+        if (positionX >= 0 && positionY >= 0 && positionX < _boardSize.x && positionY < _boardSize.y)
+        {
+            var checkedFigure = _figuresOnBoard[positionX, positionY];
+            if (checkedFigure != null)
+            {
+                if (checkedFigure.IsTempting)
+                {
+                    if (checkedFigure.CompareTag("Player"))
+                        stopSearch = true;
+                    return true;
+                }
+                else if (stopOnObstacle)
+                {
+                    stopSearch = true;
+                    return false;
+                }
+            }
+        }
+        else if (stopOnObstacle)
+            stopSearch = true;
         return false;
     }
 
     private void EndGame()
     {
-
+        StopCoroutine(_turnsCoroutine);
     }
 
     private IEnumerator TakeTurns()

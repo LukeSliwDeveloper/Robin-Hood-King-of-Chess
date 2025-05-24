@@ -1,42 +1,77 @@
 using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Guard : Figure
 {
-    [SerializeField] private FigureType _type;
+    [SerializeField] private Vector2Int[] _path;
+    [SerializeField, HideInInspector] private FigureType _type;
 
-    private static float _animationSpeed = 1f;
+    private static float _animationSpeed = 2f;
 
-    private bool _targetSpotted;
-    private Vector2Int _targetPosition;
+    private int _pathPointIndex;
+    private bool _newTargetSpotted, _oldTargetSpotted;
+    private Vector2Int _newTargetPosition, _oldTargetPosition;
+    private List<Vector2Int> _returnPath = new();
 
     public override IEnumerator TakeTurn()
     {
         Debug.Log("Guard");
-        if (_targetSpotted)
+        if (BoardManager.Instance.TrySpotPlayer(this, _type, out _newTargetPosition) && _newTargetPosition != _oldTargetPosition)
+            SpotTarget(true);
+        if (_newTargetSpotted)
         {
-            _newBoardPosition = _targetPosition;
-            var worldPosition = (Vector2)_targetPosition * BoardManager.SquareSize;
-            var tweenSpeed = (worldPosition - (Vector2)transform.position).magnitude * _animationSpeed;
-            DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
+            _newBoardPosition = _newTargetPosition;
+            _returnPath.Insert(0, BoardPosition);
         }
-        yield return base.TakeTurn();
-        if (BoardManager.Instance.TrySpotPlayer(this, _type, out _targetPosition))
-            SpotTarget();
+        else if (_oldTargetSpotted && BoardManager.Instance.GetFigureAtPosition(_oldTargetPosition.x, _oldTargetPosition.y).IsTempting)
+        {
+            _newBoardPosition = _oldTargetPosition;
+            _returnPath.Insert(0, BoardPosition);
+        }
         else
-            _targetSpotted = false;
+        {
+            if (_returnPath.Count > 0)
+            {
+                _newBoardPosition = _returnPath[0];
+                _returnPath.RemoveAt(0);
+            }
+            else
+            {
+            _newBoardPosition = _path[_pathPointIndex];
+            _pathPointIndex = (_pathPointIndex + 1) % _path.Length;
+            }
+        }
+        var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;
+        var tweenSpeed = (worldPosition - (Vector2)transform.position).magnitude / _animationSpeed;
+        DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
+        yield return base.TakeTurn();
+        if (BoardManager.Instance.TrySpotPlayer(this, _type, out _oldTargetPosition))
+            SpotTarget(false);
+        else
+            _oldTargetSpotted = false;
+        _newTargetSpotted = false;
     }
 
-    private void SpotTarget()
+    private void SpotTarget(bool onTurnStart)
     {
-        _targetSpotted = true;
+        if (onTurnStart)
+            _newTargetSpotted = true;
+        else
+            _oldTargetSpotted = true;
         // Show spotted Exclamation Mark
     }
 
     private void OnDrawGizmosSelected()
     {
-        
+        Vector3[] points = new Vector3[_path.Length];
+        for (int i = 0; i < _path.Length; i++)
+            points[i] = new Vector3(_path[i].x * BoardManager.SquareSize, _path[i].y * BoardManager.SquareSize, 0f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLineStrip(points, true);
+        if (points.Length > 0)
+            Gizmos.DrawSphere(points[points.Length - 1], .1f);
     }
 }
 

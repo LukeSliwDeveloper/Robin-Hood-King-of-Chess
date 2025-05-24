@@ -10,6 +10,7 @@ public class Player : Figure
     {
         Debug.Log("Player");
         _newBoardPosition = BoardPosition;
+        // Let player pick coins
         DOTween.Sequence().AppendInterval(1f).AppendCallback(FinishTurn);
         return base.TakeTurn();
     }
