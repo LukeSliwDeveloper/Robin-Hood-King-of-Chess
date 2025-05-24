@@ -12,7 +12,7 @@ public class Guard : Figure
 
     private int _pathPointIndex;
     private bool _newTargetSpotted, _oldTargetSpotted;
-    private Vector2Int _newTargetPosition, _oldTargetPosition;
+    private Vector2Int _newTargetPosition = Vector2Int.left, _oldTargetPosition = Vector2Int.down;
     private List<Vector2Int> _returnPath = new();
 
     public override IEnumerator TakeTurn()
@@ -25,7 +25,7 @@ public class Guard : Figure
             _newBoardPosition = _newTargetPosition;
             _returnPath.Insert(0, BoardPosition);
         }
-        else if (_oldTargetSpotted && BoardManager.Instance.GetFigureAtPosition(_oldTargetPosition.x, _oldTargetPosition.y).IsTempting)
+        else if (_oldTargetSpotted && BoardManager.Instance.CanReach(_oldTargetPosition.x, _oldTargetPosition.y, this, _type))
         {
             _newBoardPosition = _oldTargetPosition;
             _returnPath.Insert(0, BoardPosition);
@@ -34,13 +34,25 @@ public class Guard : Figure
         {
             if (_returnPath.Count > 0)
             {
-                _newBoardPosition = _returnPath[0];
-                _returnPath.RemoveAt(0);
+                var figure = BoardManager.Instance.GetFigureAtPosition(_returnPath[0].x, _returnPath[0].y);
+                if (figure != null && !figure.IsTempting)
+                    _newBoardPosition = BoardPosition;
+                else
+                {
+                    _newBoardPosition = _returnPath[0];
+                    _returnPath.RemoveAt(0);
+                }
             }
             else
             {
-            _newBoardPosition = _path[_pathPointIndex];
-            _pathPointIndex = (_pathPointIndex + 1) % _path.Length;
+                var figure = BoardManager.Instance.GetFigureAtPosition(_path[_pathPointIndex].x, _path[_pathPointIndex].y);
+                if (figure != null && !figure.IsTempting)
+                    _newBoardPosition = BoardPosition;
+                else
+                {
+                    _newBoardPosition = _path[_pathPointIndex];
+                    _pathPointIndex = (_pathPointIndex + 1) % _path.Length;
+                }
             }
         }
         var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;

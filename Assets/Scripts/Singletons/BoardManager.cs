@@ -98,28 +98,83 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 }
                 return targetPosition.x != -1;
             case FigureType.Bishop:
-                break;
-            case FigureType.Rook:
-                int rangeMultiplier;
-                foreach (var move in _rookMoves)
+                foreach (var move in _bishopMoves)
                 {
-                    rangeMultiplier = 1;
+                    int rangeMultiplier = 1;
                     do
                     {
                         searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
                         rangeMultiplier++;
                         if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
-                            targetPosition = searchedPosition;
-                        if (stopSearch)
                         {
-
+                            targetPosition = searchedPosition;
+                            if (stopSearch && _figuresOnBoard[targetPosition.x, targetPosition.y].CompareTag("Player"))
+                                return true;
                         }
+                        else if (stopSearch)
+                            break;
+                    }
+                    while (true);
+                }
+                return targetPosition.x != -1;
+            case FigureType.Rook:
+                foreach (var move in _rookMoves)
+                {
+                    int rangeMultiplier = 1;
+                    do
+                    {
+                        searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
+                        rangeMultiplier++;
+                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
+                        {
+                            targetPosition = searchedPosition;
+                            if (stopSearch && _figuresOnBoard[targetPosition.x, targetPosition.y].CompareTag("Player"))
+                                return true;
+                        }
+                        else if (stopSearch)
+                            break;
                     }
                     while (true);
                 }
                 return targetPosition.x != -1;
             case FigureType.Queen:
-                break;
+                foreach (var move in _bishopMoves)
+                {
+                    int rangeMultiplier = 1;
+                    do
+                    {
+                        searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
+                        rangeMultiplier++;
+                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
+                        {
+                            targetPosition = searchedPosition;
+                            if (stopSearch && _figuresOnBoard[targetPosition.x, targetPosition.y].CompareTag("Player"))
+                                return true;
+                        }
+                        else if (stopSearch)
+                            break;
+                    }
+                    while (true);
+                }
+                foreach (var move in _rookMoves)
+                {
+                    int rangeMultiplier = 1;
+                    do
+                    {
+                        searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
+                        rangeMultiplier++;
+                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
+                        {
+                            targetPosition = searchedPosition;
+                            if (stopSearch && _figuresOnBoard[targetPosition.x, targetPosition.y].CompareTag("Player"))
+                                return true;
+                        }
+                        else if (stopSearch)
+                            break;
+                    }
+                    while (true);
+                }
+                return targetPosition.x != -1;
             case FigureType.King:
                 for (int x = -1; x <= 1; x++)
                 {
@@ -139,7 +194,32 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         return false;
     }
 
-    public Figure GetFigureAtPosition (int x, int y) => _figuresOnBoard[x, y];
+    public Figure GetFigureAtPosition(int x, int y) => _figuresOnBoard[x, y];
+
+    public bool CanReach(int x, int y, Figure figure, FigureType figureType)
+    {
+        if ((figureType == FigureType.Knight) || (figureType == FigureType.King))
+        {
+            if ((_figuresOnBoard[x, y] == null) || (_figuresOnBoard[x, y].IsTempting))
+                return true;
+            else
+                return false;
+        }
+        else
+        {
+            Vector2Int currentPos = figure.BoardPosition;
+            Vector2Int dir = new Vector2Int(x - figure.BoardPosition.x, y - figure.BoardPosition.y);
+            dir.Clamp(-Vector2Int.one, Vector2Int.one);
+            do
+            {
+                currentPos += dir;
+                if ((_figuresOnBoard[currentPos.x, currentPos.y] != null) && (!_figuresOnBoard[currentPos.x, currentPos.y].IsTempting))
+                    return false;
+            }
+            while (currentPos.x != x || currentPos.y != y);
+            return true;
+        }
+    }
 
     private bool IsWorthGoingTo(int positionX, int positionY, out bool stopSearch, bool stopOnObstacle = false)
     {
