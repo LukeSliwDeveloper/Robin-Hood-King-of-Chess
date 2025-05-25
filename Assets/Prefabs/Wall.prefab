@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3617674dc974ee84485f4efb88fbf002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 4700423060782834662}
   <Priority>k__BackingField: 0
 --- !u!1 &7191915733768635260
 GameObject:

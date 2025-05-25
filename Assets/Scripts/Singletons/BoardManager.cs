@@ -71,7 +71,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         {
             if (newPosFigure.CompareTag("Player"))
             {
-                EndGame();
+                EndGame(false);
                 return;
             }
             else
@@ -194,7 +194,27 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         return false;
     }
 
-    public Figure GetFigureAtPosition(int x, int y) => _figuresOnBoard[x, y];
+    public Figure GetFigureAtPosition(int x, int y)
+    {
+        if (x >= 0 && y >= 0 && x < _boardSize.x && y < _boardSize.y)
+            return _figuresOnBoard[x, y];
+        else
+            return null;
+    }
+
+    public Figure GetFigureAtPosition(int x, int y, out bool outOfBounds)
+    {
+        if (x >= 0 && y >= 0 && x < _boardSize.x && y < _boardSize.y)
+        {
+            outOfBounds = false;
+            return _figuresOnBoard[x, y];
+        }
+        else
+        {
+            outOfBounds = true;
+            return null;
+        }
+    }
 
     public bool CanReach(int x, int y, Figure figure, FigureType figureType)
     {
@@ -221,6 +241,11 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         }
     }
 
+    public void EndGame(bool won)
+    {
+        StopCoroutine(_turnsCoroutine);
+    }
+
     private bool IsWorthGoingTo(int positionX, int positionY, out bool stopSearch, bool stopOnObstacle = false)
     {
         stopSearch = false;
@@ -245,11 +270,6 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         else if (stopOnObstacle)
             stopSearch = true;
         return false;
-    }
-
-    private void EndGame()
-    {
-        StopCoroutine(_turnsCoroutine);
     }
 
     private IEnumerator TakeTurns()

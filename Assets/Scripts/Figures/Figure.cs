@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class Figure : MonoBehaviour
 {
+    [SerializeField, HideInInspector] protected SpriteRenderer _spriteRenderer;
     [field: SerializeField] public int Priority { get; private set; }
 
     public Vector2Int BoardPosition { get; private set; }
@@ -27,8 +28,9 @@ public abstract class Figure : MonoBehaviour
         yield return _takeTurnWait;
     }
 
-    protected void FinishTurn()
+    protected virtual void FinishTurn()
     {
+        _spriteRenderer.sortingOrder = 0;
         BoardManager.Instance.MoveFigure(this, _newBoardPosition);
         BoardPosition = _newBoardPosition;
         _finishedTurn = true;

@@ -17,7 +17,7 @@ public class Guard : Figure
 
     public override IEnumerator TakeTurn()
     {
-        Debug.Log("Guard");
+        _spriteRenderer.sortingOrder = 1;
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _newTargetPosition) && _newTargetPosition != _oldTargetPosition)
             SpotTarget(true);
         if (_newTargetSpotted)
