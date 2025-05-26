@@ -17,6 +17,7 @@ public class Guard : Figure
 
     public override IEnumerator TakeTurn()
     {
+        ShowPath(false);
         _spriteRenderer.sortingOrder = 1;
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _newTargetPosition) && _newTargetPosition != _oldTargetPosition)
             SpotTarget(true);
@@ -64,6 +65,23 @@ public class Guard : Figure
         else
             _oldTargetSpotted = false;
         _newTargetSpotted = false;
+    }
+
+    public void ShowPath(bool show)
+    {
+        if (show) 
+        { 
+            Vector2Int targetPos;
+            if (_oldTargetSpotted)
+                targetPos = _oldTargetPosition;
+            else if (_returnPath.Count > 0)
+                targetPos = _returnPath[0];
+            else
+                targetPos = _path[_pathPointIndex];
+            BoardManager.Instance.ShowGuardMove(this, _type, targetPos);
+        }
+        else
+            BoardManager.Instance.HideGuardMove();
     }
 
     private void SpotTarget(bool onTurnStart)

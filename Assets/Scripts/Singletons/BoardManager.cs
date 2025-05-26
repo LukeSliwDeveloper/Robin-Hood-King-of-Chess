@@ -6,23 +6,37 @@ using UnityEngine;
 public class BoardManager : MonoBehaviourSingleton<BoardManager>
 {
     [SerializeField] private Vector2Int _boardSize;
+    [SerializeField, HideInInspector] private Transform[] _guardMoveSquares;
 
     public static readonly float SquareSize = .625f;
 
     public bool IsPlayerTurn { get; private set; }
 
-    private Vector2Int[] _knightMoves = new Vector2Int[]
+    private Dictionary<FigureType, Vector2Int[]> _guardMoves = new Dictionary<FigureType, Vector2Int[]>()
     {
-        new Vector2Int(-2, 1), new Vector2Int(-2, -1), new Vector2Int(-1, 2), new Vector2Int(-1, -2),
-        new Vector2Int(1, 2), new Vector2Int(1, -2), new Vector2Int(2, 1), new Vector2Int(2, -1)
-    };
-    private Vector2Int[] _bishopMoves = new Vector2Int[]
-    {
-        new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
-    };
-    private Vector2Int[] _rookMoves = new Vector2Int[]
-    {
-        new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1)
+        { FigureType.Knight, new Vector2Int[]
+        {
+            new Vector2Int(-2, 1), new Vector2Int(-2, -1), new Vector2Int(-1, 2), new Vector2Int(-1, -2),
+            new Vector2Int(1, 2), new Vector2Int(1, -2), new Vector2Int(2, 1), new Vector2Int(2, -1)
+        }},
+        { FigureType.King, new Vector2Int[]
+        {
+            new Vector2Int(-1, 1), new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(-1, 0),
+            new Vector2Int(1, 0), new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1)
+        }},
+        { FigureType.Bishop, new Vector2Int[]
+        {
+            new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
+        }},
+        { FigureType.Rook, new Vector2Int[]
+        {
+            new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1)
+        }},
+        { FigureType.Queen, new Vector2Int[]
+        {
+            new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1),
+            new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
+        }}
     };
 
     private Coroutine _turnsCoroutine;
@@ -91,7 +105,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         switch (type)
         {
             case FigureType.Knight:
-                foreach (var move in _knightMoves)
+                foreach (var move in _guardMoves[FigureType.Knight])
                 {
                     searchedPosition.Set(figure.BoardPosition.x + move.x, figure.BoardPosition.y + move.y);
                     if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch))
@@ -101,7 +115,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 }
                 return targetPosition.x != -1;
             case FigureType.Bishop:
-                foreach (var move in _bishopMoves)
+                foreach (var move in _guardMoves[FigureType.Bishop])
                 {
                     int rangeMultiplier = 1;
                     do
@@ -121,7 +135,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 }
                 return targetPosition.x != -1;
             case FigureType.Rook:
-                foreach (var move in _rookMoves)
+                foreach (var move in _guardMoves[FigureType.Rook])
                 {
                     int rangeMultiplier = 1;
                     do
@@ -141,25 +155,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 }
                 return targetPosition.x != -1;
             case FigureType.Queen:
-                foreach (var move in _bishopMoves)
-                {
-                    int rangeMultiplier = 1;
-                    do
-                    {
-                        searchedPosition.Set(figure.BoardPosition.x + move.x * rangeMultiplier, figure.BoardPosition.y + move.y * rangeMultiplier);
-                        rangeMultiplier++;
-                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch, true))
-                        {
-                            targetPosition = searchedPosition;
-                            if (stopSearch && _figuresOnBoard[targetPosition.x, targetPosition.y].CompareTag("Player"))
-                                return true;
-                        }
-                        else if (stopSearch)
-                            break;
-                    }
-                    while (true);
-                }
-                foreach (var move in _rookMoves)
+                foreach (var move in _guardMoves[FigureType.Queen])
                 {
                     int rangeMultiplier = 1;
                     do
@@ -179,16 +175,13 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
                 }
                 return targetPosition.x != -1;
             case FigureType.King:
-                for (int x = -1; x <= 1; x++)
+                foreach (var move in _guardMoves[FigureType.King])
                 {
-                    for (int y = -1; y <= 1; y++)
-                    {
-                        searchedPosition.Set(figure.BoardPosition.x + x, figure.BoardPosition.y + y);
-                        if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch))
-                            targetPosition = searchedPosition;
-                        if (stopSearch)
-                            return targetPosition.x != -1;
-                    }
+                    searchedPosition.Set(figure.BoardPosition.x + move.x, figure.BoardPosition.y + move.y);
+                    if (IsWorthGoingTo(searchedPosition.x, searchedPosition.y, out stopSearch))
+                        targetPosition = searchedPosition;
+                    if (stopSearch)
+                        return targetPosition.x != -1;
                 }
                 return targetPosition.x != -1;
             default:
@@ -241,6 +234,38 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
             }
             while (currentPos.x != x || currentPos.y != y);
             return true;
+        }
+    }
+
+    public void ShowGuardMove(Guard guard, FigureType type, Vector2Int patrolPosition)
+    {
+        _guardMoveSquares[0].position = (Vector2)patrolPosition * SquareSize;
+        _guardMoveSquares[0].gameObject.SetActive(true);
+        Vector2Int position;
+        Figure figure;
+        int squareIndex = 1;
+        foreach (var move in _guardMoves[type])
+        {
+            position = guard.BoardPosition + move;
+            if (position == patrolPosition)
+                continue;
+            figure = GetFigureAtPosition(position.x, position.y, out var outOfBounds);
+            if (!outOfBounds && (figure == null || figure.IsTempting))
+            {
+                _guardMoveSquares[squareIndex].position = (Vector2)position * SquareSize;
+                _guardMoveSquares[squareIndex].gameObject.SetActive(true);
+                squareIndex++;
+            }
+        }
+    }
+
+    public void HideGuardMove()
+    {
+        foreach (var square in _guardMoveSquares)
+        {
+            if (!square.gameObject.activeSelf)
+                break;
+            square.gameObject.SetActive(false);
         }
     }
 

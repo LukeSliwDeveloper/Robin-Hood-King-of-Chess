@@ -5,17 +5,21 @@ using UnityEngine.EventSystems;
 public class CoinFlicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private int _amount;
-    [SerializeField] private TMP_Text _amountLabel;
-    [SerializeField] private GameObject _coinPrefab;
+    [SerializeField, HideInInspector] private TMP_Text _amountLabel;
+    [SerializeField, HideInInspector] private GameObject _coinPrefab;
 
     private Vector2 _idlePosition;
     private Vector2 _dragOffset;
 
     private void Awake()
     {
-        _idlePosition = transform.position;
         _amountLabel.text = _amount.ToString();
         BoardManager.Instance.OnAddCoin += AddCoin;
+    }
+
+    private void Start()
+    {
+        _idlePosition = transform.position;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -41,9 +45,9 @@ public class CoinFlicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             Instantiate(_coinPrefab, (Vector2)pos * BoardManager.SquareSize, Quaternion.identity);
             _amountLabel.text = (--_amount).ToString();
+            transform.position = _idlePosition;
+            BoardManager.Instance.EndPlayerTurn();
         }
-        transform.position = _idlePosition;
-        BoardManager.Instance.EndPlayerTurn();
     }
 
     private void AddCoin() => _amountLabel.text = (++_amount).ToString();
