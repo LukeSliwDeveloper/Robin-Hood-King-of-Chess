@@ -6,8 +6,6 @@ public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBe
     {
         get
         {
-            if (!_canBeAccessed)
-                return null;
             if (_instance == null)
             {
                 _instance = FindAnyObjectByType<MonoBehaviourSingleton<T>>();
@@ -22,7 +20,6 @@ public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBe
     private static MonoBehaviourSingleton<T> _instance;
 
     private static bool _wasInitialized;
-    private static bool _canBeAccessed = true;
 
     protected virtual bool Awake()
     {
@@ -44,6 +41,6 @@ public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBe
     protected virtual void OnDestroy()
     {
         if (_instance == this)
-            _canBeAccessed = false;
+            _wasInitialized = false;
     }
 }

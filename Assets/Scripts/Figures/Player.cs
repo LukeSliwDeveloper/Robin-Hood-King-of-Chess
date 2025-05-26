@@ -42,6 +42,14 @@ public class Player : Figure
         return base.TakeTurn();
     }
 
+    public void EndTurn()
+    {
+        _newBoardPosition = BoardPosition;
+        foreach (var movePosition in MovePositions)
+            movePosition.Value.SetActive(false);
+        FinishTurn();
+    }
+
     protected override void FinishTurn()
     {
         _blockingFigure = BoardManager.Instance.GetFigureAtPosition(_newBoardPosition.x, _newBoardPosition.y);
@@ -49,8 +57,8 @@ public class Player : Figure
         {
             if (_blockingFigure.CompareTag("Treasure"))
                 BoardManager.Instance.EndGame(true);
-            else if (_blockingFigure.IsTempting)
-                Debug.Log("Got a Coin!");
+            else if (_blockingFigure.IsTempting && _blockingFigure != this)
+                BoardManager.Instance.AddCoin();
         }
         base.FinishTurn();
     }

@@ -1,14 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class BoardManager : MonoBehaviourSingleton<BoardManager>
 {
     [SerializeField] private Vector2Int _boardSize;
 
     public static readonly float SquareSize = .625f;
+
+    public bool IsPlayerTurn { get; private set; }
 
     private Vector2Int[] _knightMoves = new Vector2Int[]
     {
@@ -28,6 +29,8 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
     private int _movingFigureIndex;
     private Figure[,] _figuresOnBoard;
     private List<Figure> _figuresByPriority = new();
+
+    public event Action OnAddCoin;
 
     protected override bool Awake()
     {
@@ -244,7 +247,16 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
     public void EndGame(bool won)
     {
         StopCoroutine(_turnsCoroutine);
+        GameManager.Instance.LoadMenu(won);
     }
+
+    public void EndPlayerTurn()
+    {
+        if (IsPlayerTurn)
+            (_figuresByPriority[_movingFigureIndex] as Player).EndTurn();
+    }
+
+    public void AddCoin() => OnAddCoin?.Invoke();
 
     private bool IsWorthGoingTo(int positionX, int positionY, out bool stopSearch, bool stopOnObstacle = false)
     {
@@ -276,6 +288,10 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
     {
         while (true)
         {
+            if (_figuresByPriority[_movingFigureIndex].CompareTag("Player"))
+                IsPlayerTurn = true;
+            else
+                IsPlayerTurn = false;
             yield return _figuresByPriority[_movingFigureIndex].TakeTurn();
             _movingFigureIndex = (_movingFigureIndex + 1) % _figuresByPriority.Count;
         }
