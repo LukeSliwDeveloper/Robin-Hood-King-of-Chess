@@ -244,18 +244,30 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         Vector2Int position;
         Figure figure;
         int squareIndex = 1;
+        int rangeMultiplier;
+        bool stopOnObstacle = type != FigureType.Knight && type != FigureType.King;
         foreach (var move in _guardMoves[type])
         {
-            position = guard.BoardPosition + move;
-            if (position == patrolPosition)
-                continue;
-            figure = GetFigureAtPosition(position.x, position.y, out var outOfBounds);
-            if (!outOfBounds && (figure == null || figure.IsTempting))
+            rangeMultiplier = 1;
+            do
             {
-                _guardMoveSquares[squareIndex].position = (Vector2)position * SquareSize;
-                _guardMoveSquares[squareIndex].gameObject.SetActive(true);
-                squareIndex++;
+                position = guard.BoardPosition + move * rangeMultiplier;
+                rangeMultiplier++;
+                if (position == patrolPosition)
+                    continue;
+                figure = GetFigureAtPosition(position.x, position.y, out var outOfBounds);
+                if (!outOfBounds && (figure == null || figure.IsTempting))
+                {
+                    _guardMoveSquares[squareIndex].position = (Vector2)position * SquareSize;
+                    _guardMoveSquares[squareIndex].gameObject.SetActive(true);
+                    squareIndex++;
+                }
+                else if (stopOnObstacle)
+                {
+                    break;
+                }
             }
+            while (stopOnObstacle);
         }
     }
 
