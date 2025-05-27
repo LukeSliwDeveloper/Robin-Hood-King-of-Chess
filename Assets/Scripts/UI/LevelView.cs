@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class LevelView : MonoBehaviour
 {
     [SerializeField] private Button[] _levelButtons;
+    [SerializeField] private AudioClip _clip;
 
     private void OnEnable()
     {
@@ -12,5 +13,9 @@ public class LevelView : MonoBehaviour
             _levelButtons[i].interactable = true;
     }
 
-    public void LoadLevel(int levelIndex) => GameManager.Instance.LoadLevel(levelIndex);
+    public void LoadLevel(int levelIndex)
+    {
+        GameManager.Instance.PlaySfx(_clip);
+        GameManager.Instance.LoadLevel(levelIndex);
+    }
 }
