@@ -7,20 +7,33 @@ public class Guard : Figure
 {
     [SerializeField] private Vector2Int[] _path;
     [SerializeField, HideInInspector] private FigureType _type;
+    [SerializeField, HideInInspector] private SpriteRenderer _spottedSpriteRenderer;
 
     private static float _animationSpeed = 2f;
+    private static float _spottedAnimationTime = .5f;
 
     private int _pathPointIndex;
     private bool _newTargetSpotted, _oldTargetSpotted;
+    private bool _isSpottedAnimationPlaying;
     private Vector2Int _newTargetPosition = Vector2Int.left, _oldTargetPosition = Vector2Int.down;
     private List<Vector2Int> _returnPath = new();
+    private WaitUntil _spottedAnimationWait;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _spottedAnimationWait = new WaitUntil(() => !_isSpottedAnimationPlaying);
+    }
 
     public override IEnumerator TakeTurn()
     {
         ShowPath(false);
         _spriteRenderer.sortingOrder = 1;
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _newTargetPosition) && _newTargetPosition != _oldTargetPosition)
+        {
             SpotTarget(true);
+            yield return _spottedAnimationWait;
+        }
         if (_newTargetSpotted)
         {
             _newBoardPosition = _newTargetPosition;
@@ -61,7 +74,10 @@ public class Guard : Figure
         DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
         yield return base.TakeTurn();
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _oldTargetPosition))
+        {
             SpotTarget(false);
+            yield return _spottedAnimationWait;
+        }
         else
             _oldTargetSpotted = false;
         _newTargetSpotted = false;
@@ -90,7 +106,9 @@ public class Guard : Figure
             _newTargetSpotted = true;
         else
             _oldTargetSpotted = true;
-        // Show spotted Exclamation Mark
+        _isSpottedAnimationPlaying = true;
+        _spottedSpriteRenderer.color = Color.white;
+        _spottedSpriteRenderer.DOFade(0f, _spottedAnimationTime).OnComplete(() => _isSpottedAnimationPlaying = false);
     }
 
     private void OnDrawGizmosSelected()

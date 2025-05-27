@@ -15,7 +15,7 @@ public abstract class Figure : MonoBehaviour
     private bool _finishedTurn;
     private WaitUntil _takeTurnWait;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         BoardPosition = new ((int)(transform.position.x / BoardManager.SquareSize), (int)(transform.position.y / BoardManager.SquareSize));
         _takeTurnWait = new WaitUntil(FinishedTurn);
