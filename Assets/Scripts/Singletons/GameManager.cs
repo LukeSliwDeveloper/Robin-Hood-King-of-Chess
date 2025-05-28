@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -8,14 +7,16 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     [SerializeField] private AudioSource[] _sfxSources;
     [SerializeField] private AudioMixer _mixer;
 
-    public int FurthestCompletedLevel { get; private set; } = -1;
-
-    private int _currentLevel;
+    public int FurthestCompletedLevel { get; private set; }
+    public int LevelsAmount { get; private set; } = 2;
+    public int CurrentLevel { get; private set; }
 
     protected override bool Awake()
     {
         if (base.Awake())
         {
+            if (PlayerPrefs.HasKey("FurthestCompletedLevel"))
+                FurthestCompletedLevel = PlayerPrefs.GetInt("FurthestCompletedLevel");
             DontDestroyOnLoad(gameObject);
         }
         return true;
@@ -49,14 +50,26 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void LoadLevel(int levelIndex)
     {
-        _currentLevel = levelIndex - 1;
+        CurrentLevel = levelIndex;
         SceneManager.LoadScene(levelIndex);
+    }
+
+    public void LoadNextLevel()
+    {
+        FurthestCompletedLevel = CurrentLevel;
+        PlayerPrefs.SetInt("FurthestCompletedLevel", FurthestCompletedLevel);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(CurrentLevel + 1);
     }
 
     public void LoadMenu(bool won)
     {
         if (won)
-            FurthestCompletedLevel = _currentLevel;
+        {
+            FurthestCompletedLevel = CurrentLevel;
+            PlayerPrefs.SetInt("FurthestCompletedLevel", FurthestCompletedLevel);
+            PlayerPrefs.Save();
+        }
         SceneManager.LoadScene(0);
     }
 }

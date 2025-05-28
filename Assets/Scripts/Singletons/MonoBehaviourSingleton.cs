@@ -23,7 +23,7 @@ public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBe
 
     protected virtual bool Awake()
     {
-        if (_wasInitialized)
+        if (_wasInitialized && _instance == this)
             return false;
         if (_instance != this)
         {

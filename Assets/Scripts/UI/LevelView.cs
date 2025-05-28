@@ -8,8 +8,8 @@ public class LevelView : MonoBehaviour
 
     private void OnEnable()
     {
-        var furthestLevel = Mathf.Min(GameManager.Instance.FurthestCompletedLevel + 2, _levelButtons.Length);
-        for (int i = 0; i < furthestLevel; i++)
+        var furthestLevel = Mathf.Min(GameManager.Instance.FurthestCompletedLevel, _levelButtons.Length);
+        for (int i = 0; i <= furthestLevel; i++)
             _levelButtons[i].interactable = true;
     }
 

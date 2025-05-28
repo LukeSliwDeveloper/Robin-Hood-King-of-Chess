@@ -45,6 +45,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
     private List<Figure> _figuresByPriority = new();
 
     public event Action OnAddCoin;
+    public event Action<bool> OnGameOver;
 
     protected override bool Awake()
     {
@@ -284,7 +285,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
     public void EndGame(bool won)
     {
         StopCoroutine(_turnsCoroutine);
-        GameManager.Instance.LoadMenu(won);
+        OnGameOver?.Invoke(won);
     }
 
     public void EndPlayerTurn()
