@@ -45,9 +45,9 @@ public class CoinFlicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             Instantiate(_coinPrefab, (Vector2)pos * BoardManager.SquareSize, Quaternion.identity);
             _amountLabel.text = (--_amount).ToString();
-            transform.position = _idlePosition;
             BoardManager.Instance.EndPlayerTurn();
         }
+        transform.position = _idlePosition;
     }
 
     private void AddCoin() => _amountLabel.text = (++_amount).ToString();

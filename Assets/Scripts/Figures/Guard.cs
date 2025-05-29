@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Guard : Figure
 {
@@ -71,6 +72,7 @@ public class Guard : Figure
         }
         var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;
         var tweenSpeed = (worldPosition - (Vector2)transform.position).magnitude / _animationSpeed;
+        transform.DOPunchScale(Vector3.up * .1f, tweenSpeed, 0, 0f);
         DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
         yield return base.TakeTurn();
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _oldTargetPosition))
@@ -108,6 +110,7 @@ public class Guard : Figure
             _oldTargetSpotted = true;
         _isSpottedAnimationPlaying = true;
         _spottedSpriteRenderer.color = Color.white;
+        transform.DOPunchScale(Vector3.one * .2f, _spottedAnimationTime, 0, 0f);
         _spottedSpriteRenderer.DOFade(0f, _spottedAnimationTime).OnComplete(() => _isSpottedAnimationPlaying = false);
     }
 

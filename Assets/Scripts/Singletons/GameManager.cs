@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     [SerializeField] private AudioMixer _mixer;
 
     public int FurthestCompletedLevel { get; private set; }
-    public int LevelsAmount { get; private set; } = 2;
+    public int LevelsAmount { get; private set; } = 3;
     public int CurrentLevel { get; private set; }
 
     protected override bool Awake()
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         FurthestCompletedLevel = CurrentLevel;
         PlayerPrefs.SetInt("FurthestCompletedLevel", FurthestCompletedLevel);
         PlayerPrefs.Save();
-        SceneManager.LoadScene(CurrentLevel + 1);
+        SceneManager.LoadScene(++CurrentLevel);
     }
 
     public void LoadMenu(bool won)

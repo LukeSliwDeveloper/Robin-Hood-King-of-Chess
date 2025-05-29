@@ -24,6 +24,7 @@ public class Player : Figure
                 _newBoardPosition = BoardPosition + movePosition.Key;
                 var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;
                 var tweenSpeed = (worldPosition - (Vector2)transform.position).magnitude / _animationSpeed;
+                transform.DOPunchScale(Vector3.up * .1f, tweenSpeed, 0, 0f);
                 DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
             }
         }

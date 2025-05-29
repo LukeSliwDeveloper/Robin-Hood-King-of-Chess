@@ -87,13 +87,12 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
         var newPosFigure = _figuresOnBoard[newPos.x, newPos.y];
         if(newPosFigure != null)
         {
+            Destroy(newPosFigure.gameObject);
             if (newPosFigure.CompareTag("Player"))
             {
                 EndGame(false);
                 return;
             }
-            else
-                Destroy(newPosFigure.gameObject);
         }
         _figuresOnBoard[newPos.x, newPos.y] = figure;
     }

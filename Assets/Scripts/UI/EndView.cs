@@ -25,7 +25,7 @@ public class EndView : MonoBehaviour
     {
         GameManager.Instance.PlaySfx(_clip);
         if (_won && (GameManager.Instance.CurrentLevel != GameManager.Instance.LevelsAmount))
-            GameManager.Instance.LoadLevel(GameManager.Instance.CurrentLevel + 1);
+            GameManager.Instance.LoadNextLevel();
         else
             GameManager.Instance.LoadLevel(GameManager.Instance.CurrentLevel);
     }
