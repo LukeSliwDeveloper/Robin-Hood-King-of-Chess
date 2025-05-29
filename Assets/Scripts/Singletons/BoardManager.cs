@@ -7,6 +7,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
 {
     [SerializeField] private Vector2Int _boardSize;
     [SerializeField, HideInInspector] private Transform[] _guardMoveSquares;
+    [SerializeField, HideInInspector] private AudioClip _clip;
 
     public static readonly float SquareSize = .625f;
 
@@ -293,7 +294,11 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
             (_figuresByPriority[_movingFigureIndex] as Player).EndTurn();
     }
 
-    public void AddCoin() => OnAddCoin?.Invoke();
+    public void AddCoin()
+    {
+        GameManager.Instance.PlaySfx(_clip);
+        OnAddCoin?.Invoke();
+    }
 
     private bool IsWorthGoingTo(int positionX, int positionY, out bool stopSearch, bool stopOnObstacle = false)
     {

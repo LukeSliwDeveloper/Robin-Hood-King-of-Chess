@@ -2022,6 +2022,7 @@ MonoBehaviour:
   - {fileID: 3632046333921663437}
   - {fileID: 7609955032894460700}
   - {fileID: 5243119750159640149}
+  _clip: {fileID: 8300000, guid: 2d1c84a6e0d4be44da70bc826e4c9082, type: 3}
 --- !u!1 &7482479934007138110
 GameObject:
   m_ObjectHideFlags: 0

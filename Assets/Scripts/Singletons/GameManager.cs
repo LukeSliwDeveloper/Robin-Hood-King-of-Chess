@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     [SerializeField] private AudioMixer _mixer;
 
     public int FurthestCompletedLevel { get; private set; }
-    public int LevelsAmount { get; private set; } = 3;
+    public int LevelsAmount { get; private set; } = 10;
     public int CurrentLevel { get; private set; }
 
     protected override bool Awake()
@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
             {
                 source.clip = clip;
                 source.Play();
+                return;
             }
         }
     }

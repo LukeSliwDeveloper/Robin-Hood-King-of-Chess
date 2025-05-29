@@ -7,6 +7,7 @@ public class SettingsView : MonoBehaviour
     [SerializeField] private Slider _musicSlider, _sfxSlider;
     [SerializeField] private AudioMixer _mixer;
     [SerializeField] private AudioClip _clip;
+    [SerializeField] private AudioClip _volumeClip;
 
     private void Awake()
     {
@@ -19,6 +20,14 @@ public class SettingsView : MonoBehaviour
     }
 
     public void PlayClick() => GameManager.Instance.PlaySfx(_clip);
+
+    public void PlayVolume() => GameManager.Instance.PlaySfx(_volumeClip);
+
+    public void Exit()
+    {
+        GameManager.Instance.PlaySfx(_clip);
+        GameManager.Instance.LoadMenu(false);
+    }
 
     private void ChangeMusicVolume(float amount)
     {
