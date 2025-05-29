@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : Figure
 {
     [SerializeField, HideInInspector] SerializedDictionary<Vector2Int, GameObject> MovePositions;
+    [SerializeField, HideInInspector] private AudioClip _coinClip, _moveClip;
 
     public override bool IsTempting => true;
 
@@ -25,6 +26,7 @@ public class Player : Figure
                 var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;
                 var tweenSpeed = (worldPosition - (Vector2)transform.position).magnitude / _animationSpeed;
                 transform.DOPunchScale(Vector3.up * .1f, tweenSpeed, 0, 0f);
+                GameManager.Instance.PlaySfx(_moveClip);
                 DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
             }
         }
@@ -59,7 +61,10 @@ public class Player : Figure
             if (_blockingFigure.CompareTag("Treasure"))
                 BoardManager.Instance.EndGame(true);
             else if (_blockingFigure.IsTempting && _blockingFigure != this)
+            {
+                GameManager.Instance.PlaySfx(_coinClip);
                 BoardManager.Instance.AddCoin();
+            }
         }
         base.FinishTurn();
     }

@@ -9,7 +9,7 @@ public class Guard : Figure
     [SerializeField] private Vector2Int[] _path;
     [SerializeField, HideInInspector] private FigureType _type;
     [SerializeField, HideInInspector] private SpriteRenderer _spottedSpriteRenderer;
-    [SerializeField, HideInInspector] private AudioClip _spottedAudioClip;
+    [SerializeField, HideInInspector] private AudioClip _spottedAudioClip, _moveClip;
 
     private static float _animationSpeed = 2f;
     private static float _spottedAnimationTime = .5f;
@@ -74,6 +74,7 @@ public class Guard : Figure
         var worldPosition = (Vector2)_newBoardPosition * BoardManager.SquareSize;
         var tweenSpeed = Mathf.Max((worldPosition - (Vector2)transform.position).magnitude / _animationSpeed, 0.01f);
         transform.DOPunchScale(Vector3.up * .1f, tweenSpeed, 0, 0f);
+        GameManager.Instance.PlaySfx(_moveClip);
         DOTween.Sequence().Append(transform.DOMove(worldPosition, tweenSpeed)).AppendCallback(FinishTurn);
         yield return base.TakeTurn();
         if (BoardManager.Instance.TrySpotPlayer(this, _type, out _oldTargetPosition))

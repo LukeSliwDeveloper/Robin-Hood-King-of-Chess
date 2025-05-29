@@ -7,6 +7,7 @@ public class CoinFlicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     [SerializeField] private int _amount;
     [SerializeField, HideInInspector] private TMP_Text _amountLabel;
     [SerializeField, HideInInspector] private GameObject _coinPrefab;
+    [SerializeField, HideInInspector] private AudioClip _clip;
 
     private Vector2 _idlePosition;
     private Vector2 _dragOffset;
@@ -46,6 +47,7 @@ public class CoinFlicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             Instantiate(_coinPrefab, (Vector2)pos * BoardManager.SquareSize, Quaternion.identity);
             _amountLabel.text = (--_amount).ToString();
             BoardManager.Instance.EndPlayerTurn();
+            GameManager.Instance.PlaySfx(_clip);
         }
         transform.position = _idlePosition;
     }

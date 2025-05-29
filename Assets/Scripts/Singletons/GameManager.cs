@@ -1,9 +1,12 @@
+using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviourSingleton<GameManager>
 {
+    [SerializeField] private AudioSource _musicSource;
     [SerializeField] private AudioSource[] _sfxSources;
     [SerializeField] private AudioMixer _mixer;
 
@@ -51,13 +54,16 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void LoadLevel(int levelIndex)
     {
+        FadeMusic(false);
         CurrentLevel = levelIndex;
         SceneManager.LoadScene(levelIndex);
     }
 
     public void LoadNextLevel()
     {
-        FurthestCompletedLevel = CurrentLevel;
+        FadeMusic(false);
+        if (FurthestCompletedLevel < CurrentLevel)
+            FurthestCompletedLevel = CurrentLevel;
         PlayerPrefs.SetInt("FurthestCompletedLevel", FurthestCompletedLevel);
         PlayerPrefs.Save();
         SceneManager.LoadScene(++CurrentLevel);
@@ -65,12 +71,19 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
 
     public void LoadMenu(bool won)
     {
+        FadeMusic(false);
         if (won)
         {
-            FurthestCompletedLevel = CurrentLevel;
+            if (FurthestCompletedLevel < CurrentLevel)
+                FurthestCompletedLevel = CurrentLevel;
             PlayerPrefs.SetInt("FurthestCompletedLevel", FurthestCompletedLevel);
             PlayerPrefs.Save();
         }
         SceneManager.LoadScene(0);
+    }
+
+    public void FadeMusic(bool toZero)
+    {
+        _musicSource.DOFade(toZero ? 0f : 1f, .1f);
     }
 }

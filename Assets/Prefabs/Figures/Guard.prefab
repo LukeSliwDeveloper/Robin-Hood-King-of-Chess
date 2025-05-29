@@ -446,4 +446,5 @@ MonoBehaviour:
   _path: []
   _type: 0
   _spottedSpriteRenderer: {fileID: 716259871678955286}
-  _spottedAudioClip: {fileID: 8300000, guid: a1385683f622bfd4bb7e48b6c91b3764, type: 3}
+  _spottedAudioClip: {fileID: 8300000, guid: de164ab72d45532448a879951eeedffa, type: 3}
+  _moveClip: {fileID: 8300000, guid: 70a0f58c93d1c5045ad9d412d7068193, type: 3}

@@ -566,6 +566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2ff37fa6b454f24c9301829448055a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _musicSource: {fileID: 1738596561970751738}
   _sfxSources:
   - {fileID: 1660633160427530614}
   - {fileID: 866619813880417093}

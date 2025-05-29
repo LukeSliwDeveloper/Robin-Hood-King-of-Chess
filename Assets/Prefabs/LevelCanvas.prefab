@@ -1219,8 +1219,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -7134687239855319044, guid: d3a2a5270fd489a4488ad5f0095642b0, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 2d1c84a6e0d4be44da70bc826e4c9082, type: 3}
-  m_Resource: {fileID: 8300000, guid: 2d1c84a6e0d4be44da70bc826e4c9082, type: 3}
+  m_audioClip: {fileID: 8300000, guid: f05efd70ffc99244d8a0ea6aafdb4da9, type: 3}
+  m_Resource: {fileID: 8300000, guid: f05efd70ffc99244d8a0ea6aafdb4da9, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1535,9 +1535,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _infoLabel: {fileID: 2790721207504302494}
   _nextButtonLabel: {fileID: 708146801352970916}
-  _clip: {fileID: 8300000, guid: 2d1c84a6e0d4be44da70bc826e4c9082, type: 3}
-  _winClip: {fileID: 8300000, guid: 91b04825444aea54094c6a8a790def95, type: 3}
-  _looseClip: {fileID: 8300000, guid: caa917be6f3b4e140bb9cc6c74c5daf1, type: 3}
+  _clip: {fileID: 8300000, guid: f05efd70ffc99244d8a0ea6aafdb4da9, type: 3}
+  _winClip: {fileID: 8300000, guid: 0fe1b478898c381499b1cdb9d7d7b01a, type: 3}
+  _looseClip: {fileID: 8300000, guid: 3ead16e2698060842bf0d4c0ca6f953f, type: 3}
 --- !u!1 &5970078182652529321
 GameObject:
   m_ObjectHideFlags: 0
@@ -2083,6 +2083,7 @@ MonoBehaviour:
   _amount: 3
   _amountLabel: {fileID: 1659682341882151146}
   _coinPrefab: {fileID: 7756184747849432088, guid: c5343673647f5694995e294994f600dc, type: 3}
+  _clip: {fileID: 8300000, guid: 5d69e16bcbf8e724bb76edda20eac364, type: 3}
 --- !u!1 &9118949191150226910
 GameObject:
   m_ObjectHideFlags: 0
@@ -2208,6 +2209,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 2273950511578470627}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

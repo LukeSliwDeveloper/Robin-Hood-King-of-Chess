@@ -284,6 +284,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager>
 
     public void EndGame(bool won)
     {
+        GameManager.Instance.FadeMusic(true);
         StopCoroutine(_turnsCoroutine);
         OnGameOver?.Invoke(won);
     }

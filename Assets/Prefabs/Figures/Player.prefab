@@ -1676,6 +1676,8 @@ MonoBehaviour:
       Value: {fileID: 2034480016233284289}
     - Key: {x: 2, y: -1}
       Value: {fileID: 4052802568102054830}
+  _coinClip: {fileID: 8300000, guid: 5d69e16bcbf8e724bb76edda20eac364, type: 3}
+  _moveClip: {fileID: 8300000, guid: 70a7f483ff8744846842d6afc18b4fc6, type: 3}
 --- !u!1 &5236535782202526706
 GameObject:
   m_ObjectHideFlags: 0
