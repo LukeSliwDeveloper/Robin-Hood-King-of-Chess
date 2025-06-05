@@ -2658,7 +2658,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 9.?
+  m_text: 9. The Queens Gambit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 478abe101f604164dab43613b4788ee3, type: 2}
   m_sharedMaterial: {fileID: 3986522556458808395, guid: 478abe101f604164dab43613b4788ee3, type: 2}
@@ -3154,7 +3154,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 6.?
+  m_text: 6. Enter the castle
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 478abe101f604164dab43613b4788ee3, type: 2}
   m_sharedMaterial: {fileID: 3986522556458808395, guid: 478abe101f604164dab43613b4788ee3, type: 2}
@@ -3849,7 +3849,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 8.?
+  m_text: 8. Patrol
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 478abe101f604164dab43613b4788ee3, type: 2}
   m_sharedMaterial: {fileID: 3986522556458808395, guid: 478abe101f604164dab43613b4788ee3, type: 2}
@@ -4022,7 +4022,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 7.?
+  m_text: 7. The not so christian way
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 478abe101f604164dab43613b4788ee3, type: 2}
   m_sharedMaterial: {fileID: 3986522556458808395, guid: 478abe101f604164dab43613b4788ee3, type: 2}
